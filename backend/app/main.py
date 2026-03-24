@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -11,7 +13,14 @@ from app.schemas import (
 )
 from app.services import analytics
 
-app = FastAPI(title="NYC Taxi Dashboard API")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    load_data()  # eagerly load and cache on startup
+    yield
+
+
+app = FastAPI(title="NYC Taxi Dashboard API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
