@@ -1,8 +1,8 @@
 resource "aws_amplify_app" "frontend" {
-  name        = "${var.app_name}-frontend"
-  repository  = "https://github.com/${var.github_repo}"
-  oauth_token = var.github_oauth_token
-  platform    = "WEB"
+  name         = "${var.app_name}-frontend"
+  repository   = "https://github.com/${var.github_repo}"
+  access_token = var.github_access_token != null ? var.github_access_token : var.github_oauth_token
+  platform     = "WEB"
 
   # Pass the App Runner HTTPS URL as a build-time env var
   environment_variables = {

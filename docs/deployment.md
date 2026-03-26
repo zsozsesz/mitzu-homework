@@ -167,15 +167,26 @@ If the GitHub OIDC provider already exists in your AWS account, set:
 
 ## Handling Terraform Secrets
 
-Do not keep `github_oauth_token` in a tracked Terraform file.
+Do not keep `github_access_token` in a tracked Terraform file.
 
 For local Terraform usage, prefer an environment variable:
 
-- `export TF_VAR_github_oauth_token="..."`
+- `export TF_VAR_github_access_token="..."`
 
 If you want a file-based local override, use an ignored file such as:
 
 - `terraform/secrets.auto.tfvars`
+
+For new GitHub-based Amplify apps, Terraform should use Amplify's `accessToken` flow, not legacy `oauthToken`. AWS documents that this requires:
+
+1. Installing the regional Amplify GitHub App on the repository
+2. Providing a GitHub personal access token with `admin:repo_hook`
+
+For this repository in `eu-west-1`, install the GitHub App here:
+
+- `https://github.com/apps/aws-amplify-eu-west-1/installations/new`
+
+Then provide the token to Terraform as `TF_VAR_github_access_token`.
 
 ## Scaling Considerations
 

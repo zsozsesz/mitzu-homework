@@ -16,8 +16,16 @@ variable "github_repo" {
 }
 
 variable "github_oauth_token" {
-  description = "GitHub personal access token with repo scope (used by Amplify)"
+  description = "Deprecated fallback token for legacy Amplify OAuth GitHub connections"
   type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "github_access_token" {
+  description = "GitHub personal access token used by Amplify GitHub App access"
+  type        = string
+  default     = null
   sensitive   = true
 }
 
