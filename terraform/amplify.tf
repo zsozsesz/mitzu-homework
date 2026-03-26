@@ -41,6 +41,7 @@ resource "aws_amplify_app" "frontend" {
 resource "aws_amplify_branch" "main" {
   app_id      = aws_amplify_app.frontend.id
   branch_name = var.amplify_branch
+  display_name = replace(var.amplify_branch, "/", "-")
 
   enable_auto_build = true
   framework         = "React"

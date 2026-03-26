@@ -15,7 +15,7 @@ output "backend_url" {
 
 output "frontend_url" {
   description = "Amplify default domain (HTTPS)"
-  value       = "https://${var.amplify_branch}.${aws_amplify_app.frontend.default_domain}"
+  value       = "https://${replace(var.amplify_branch, "/", "-")}.${aws_amplify_app.frontend.default_domain}"
 }
 
 output "github_actions_role_arn" {
