@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -22,9 +23,19 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="NYC Taxi Dashboard API", lifespan=lifespan)
 
+cors_allow_origins = os.environ.get(
+    "CORS_ALLOW_ORIGINS",
+    "http://localhost:5173,http://localhost:3000",
+)
+cors_allow_origin_regex = os.environ.get(
+    "CORS_ALLOW_ORIGIN_REGEX",
+    r"https://.*\.amplifyapp\.com",
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[origin.strip() for origin in cors_allow_origins.split(",") if origin.strip()],
+    allow_origin_regex=cors_allow_origin_regex,
     allow_methods=["GET"],
     allow_headers=["*"],
 )
