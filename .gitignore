@@ -24,6 +24,16 @@ frontend/dist/
 data/*.parquet
 data/*.csv
 
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+terraform/*.auto.tfvars
+terraform/*.auto.tfvars.json
+terraform/*.tfvars.local
+
 # IDE
 .vscode/
 .idea/

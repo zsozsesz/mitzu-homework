@@ -117,7 +117,7 @@ The preferred workflow is to use GitHub as the source of truth for deployments.
 
 ### Frontend
 
-The frontend can be deployed through Amplify’s GitHub integration. Amplify automatically builds and deploys the frontend when the configured release flow is triggered.
+The frontend is deployed through Amplify's GitHub integration. Once Terraform has connected the repository and branch, Amplify automatically rebuilds and deploys the frontend for that branch.
 
 ### Backend
 
@@ -125,10 +125,57 @@ The backend deployment flow is:
 
 1. GitHub Actions builds the backend Docker image
 2. The image is pushed to Amazon ECR using a stable tag (e.g. `latest` or `prod`)
-3. AWS App Runner is configured with automatic deployments enabled and monitors the image tag
-4. When a new image is pushed, App Runner automatically triggers a deployment
+3. AWS App Runner is configured with automatic deployments enabled and watches the ECR image tag
+4. When the `latest` image changes, App Runner automatically deploys the new backend image
 
 This keeps frontend and backend deployment independent while still supporting a clean monorepo workflow.
+
+## GitHub Workflow Requirements
+
+The GitHub Actions pipeline assumes the Terraform resources already exist and only needs AWS credentials so it can push the backend image to ECR.
+
+Configure one of these authentication options as repository secrets:
+
+- `AWS_ROLE_TO_ASSUME` for GitHub OIDC authentication, or
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as a fallback
+
+The workflow is aligned to the Terraform defaults in this repo:
+
+- region: `eu-west-1`
+- ECR repository: `nyc-taxi-dashboard-backend`
+- App Runner service: `nyc-taxi-dashboard-backend`
+- Amplify app: `nyc-taxi-dashboard-frontend`
+- Amplify deployment branch: `feat/deployment`
+
+Terraform now creates the GitHub Actions IAM role for ECR pushes. After `terraform apply`, you can fetch the role ARN with:
+
+- `terraform output -raw github_actions_role_arn`
+
+Then store that value in the GitHub repository secret:
+
+- `AWS_ROLE_TO_ASSUME`
+
+By default, the role trusts only this repository and branch:
+
+- repository: `zsozsesz/mitzu-homework`
+- branch: `feat/deployment`
+
+If the GitHub OIDC provider already exists in your AWS account, set:
+
+- `create_github_actions_oidc_provider = false`
+- `github_actions_oidc_provider_arn = "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com"`
+
+## Handling Terraform Secrets
+
+Do not keep `github_oauth_token` in a tracked Terraform file.
+
+For local Terraform usage, prefer an environment variable:
+
+- `export TF_VAR_github_oauth_token="..."`
+
+If you want a file-based local override, use an ignored file such as:
+
+- `terraform/secrets.auto.tfvars`
 
 ## Scaling Considerations
 

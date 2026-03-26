@@ -1,0 +1,17 @@
+github_repo = "your-org/your-repo"
+
+# Provide sensitive values through environment variables instead of this file.
+# Example:
+# export TF_VAR_github_oauth_token="ghp_xxx"
+#
+# If you prefer a local file, create an ignored file such as:
+# terraform/secrets.auto.tfvars
+# with:
+# github_oauth_token = "ghp_xxx"
+
+# Optional overrides
+aws_region     = "eu-west-1"
+app_name       = "nyc-taxi-dashboard"
+github_actions_branch = "feat/deployment"
+amplify_branch = "feat/deployment"
+data_s3_key    = "yellow_tripdata_2024-01.parquet"
